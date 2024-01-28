@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English Word Quiz</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .container {
+            margin-top: 30px;
+        }
+        .editable {
+            border: 1px solid #ccc;
+            min-height: 24px;
+            padding: 2px 6px;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- ナビゲーション -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="navbar-nav">
+                <a class="nav-item nav-link" href="#" onclick="showSection('quiz')">Quiz</a>
+                <a class="nav-item nav-link" href="#" onclick="showSection('wordList')">Word List</a>
+            </div>
+        </nav>
+
+        <!-- 単語クイズセクション -->
+        <!-- 単語クイズセクション -->
+        <div id="quiz" style="display: none;">
+            <h2>English Word Quiz</h2>
+            <button onclick="getNewWord()">Get New Word</button>
+            <p>Word: <span id="word"></span></p>
+            <p>Meaning: <span id="meaning"></span></p>
+            <!-- ここに単語クイズのJavaScript関数を追加 -->
+            
+        </div>
+
+
+        <!-- 単語リストセクション -->
+        <!-- 単語リストセクション -->
+        <div id="wordList" style="display: none;">
+            <h2>Word List</h2>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Word</th>
+                        <th>Meaning</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- ここにJavaScriptで単語リストの内容を動的に追加 -->
+                </tbody>
+            </table>
+            <!-- 単語を追加するためのボタンやフォーム -->
+            <!-- 単語リストの編集や削除のためのJavaScript関数を追加 -->
+            <div class="add-word-form">
+                <input type="text" id="newWord" placeholder="New word">
+                <input type="text" id="newMeaning" placeholder="Meaning">
+                <button onclick="addNewWord()">Add New Word</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // セクションの表示・非表示を切り替える関数
+        function showSection(sectionId) {
+            // すべてのセクションを非表示にする
+            document.getElementById('quiz').style.display = 'none';
+            document.getElementById('wordList').style.display = 'none';
+
+            // 指定されたセクションを表示する
+            document.getElementById(sectionId).style.display = 'block';
+        }
+
+        // ページロード時に単語クイズセクションを表示
+        window.onload = function() {
+            showSection('quiz');
+            loadWordsFromServer(); // 単語リストをサーバーから読み込む
+        };
+
+        // その他の関数（単語の追加、編集、削除など）
+        async function loadWordsFromServer() {
+            try {
+                const response = await fetch('http://127.0.0.1:5000/words');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const words = await response.json();
+                renderWords(words); // 単語リストをレンダリングする関数を呼び出す
+            } catch (error) {
+                console.log('Error fetching words from server:', error);
+            }
+        }
+
+        function renderWords(words) {
+            const wordList = document.getElementById('wordList').querySelector('tbody');
+            wordList.innerHTML = '';
+            words.forEach((word, index) => {
+                wordList.innerHTML += `
+                    <tr>
+                        <td contenteditable="true" class="editable" onblur="updateWordOnServer(${index}, 'word', this.innerText)">${word.word}</td>
+                        <td contenteditable="true" class="editable" onblur="updateWordOnServer(${index}, 'meaning', this.innerText)">${word.meaning}</td>
+                        <td><button onclick="deleteWordOnServer(${index})" class="btn btn-danger">Delete</button></td>
+                    </tr>
+                `;
+            });
+        }
+
+        window.onload = function() {
+            loadWordsFromServer(); // ページロード時にサーバーから単語リストを取得
+        };
+
+        async function updateWordOnServer(index, field, value) {
+            try {
+                const response = await fetch(`http://127.0.0.1:5000/words/${index}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ [field]: value })
+                });
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                // 更新後の処理（必要に応じて）
+            } catch (error) {
+                console.log('Error updating word:', error);
+            }
+        }
+
+        async function deleteWordOnServer(index) {
+            try {
+                const response = await fetch(`http://127.0.0.1:5000/words/${index}`, {
+                    method: 'DELETE'
+                });
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                loadWordsFromServer(); // 単語リストを再取得
+            } catch (error) {
+                console.log('Error deleting word:', error);
+            }
+        }
+
+        async function getNewWord() {
+            try {
+                const response = await fetch('http://127.0.0.1:5000/get-word');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const wordData = await response.json();
+                document.getElementById('word').textContent = wordData.word;
+                document.getElementById('meaning').textContent = wordData.meaning;
+            } catch (error) {
+                console.log('Error fetching a new word:', error);
+            }
+        }
+
+        async function addNewWord() {
+            const newWord = document.getElementById('newWord').value;
+            const newMeaning = document.getElementById('newMeaning').value;
+            try {
+                const response = await fetch('http://127.0.0.1:5000/words', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ word: newWord, meaning: newMeaning })
+                });
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                loadWordsFromServer(); // 単語リストを再読み込み
+            } catch (error) {
+                console.log('Error adding a new word:', error);
+            }
+        }
+
+
+    </script>
+</body>
+</html>
