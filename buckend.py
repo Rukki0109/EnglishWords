@@ -32,6 +32,23 @@ words = [
     {"word": "journalist", "meaning": "reporter, correspondent"},
     {"word": "employer", "meaning": "boss, manager"},
     {"word": "lawyer", "meaning": "attorney, counsel"},
+    {"word": "architect", "meaning": "one who designs buildings"},
+    {"word": "nurse", "meaning": "healthcare professional"},
+    {"word": "teacher", "meaning": "educator, instructor"},
+    {"word": "scientist", "meaning": "expert in science"},
+    {"word": "musician", "meaning": "person who plays a musical instrument"},
+    {"word": "artist", "meaning": "creative individual"},
+    {"word": "chef", "meaning": "professional cook"},
+    {"word": "engineer", "meaning": "professional in engineering"},
+    {"word": "writer", "meaning": "one who writes"},
+    {"word": "pilot", "meaning": "one who operates the flight controls of an aircraft"},
+    {"word": "athlete", "meaning": "person skilled in sports"},
+    {"word": "actor", "meaning": "performer in film or theater"},
+    {"word": "politician", "meaning": "person involved in politics"},
+    {"word": "photographer", "meaning": "one who takes photographs professionally"},
+    {"word": "designer", "meaning": "one who designs"},
+    {"word": "entrepreneur", "meaning": "one who starts a business"},
+    {"word": "veterinarian", "meaning": "animal doctor"},
     # 他の単語を続けて追加...
 ]
 
