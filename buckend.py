@@ -52,8 +52,6 @@ words = [
     # 他の単語を続けて追加...
 ]
 
-
-
 @app.route('/words', methods=['GET', 'POST'])
 def handle_words():
     if request.method == 'GET':
@@ -78,28 +76,15 @@ def handle_word(index):
 
     elif request.method == 'DELETE':
         # 単語を削除
-        if index < len(words):
-            word = words.pop(index)
-            return jsonify(word)
-        else:
-            abort(404)  # インデックスが範囲外の場合は404エラー
+        word = words.pop(index)
+        return jsonify(word)
 
     return '', 204  # PUT/DELETE以外の場合は204 No Contentを返す
-
 
 @app.route('/get-word', methods=['GET'])
 def get_word():
     return jsonify(random.choice(words))
 
-    if request.method == 'PUT':
-        # 単語を更新
-        word_data = request.json
-        words[index] = word_data
-        return jsonify(word_data)
-    elif request.method == 'DELETE':
-        # 単語を削除
-        word = words.pop(index)
-        return jsonify(word)
-
 if __name__ == '__main__':
     app.run(debug=True)
+
